@@ -1,0 +1,71 @@
+{
+  "name": "hermes-orchestrator",
+  "version": "1.0.0",
+  "description": "Hermes AI Orchestrator - 下一代多智能体协同工作流编排平台",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint . --ext js,jsx",
+    "lint:fix": "eslint . --ext js,jsx --fix",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\"",
+    "prepare": "husky install"
+  },
+  "keywords": ["ai", "agent", "multi-agent", "orchestrator", "llm", "workflow", "openai", "anthropic"],
+  "author": "Hermes AI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/hermes-orchestrator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/hermes-orchestrator/issues"
+  },
+  "homepage": "https://github.com/yourusername/hermes-orchestrator#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "socket.io": "^4.7.4",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.4.1",
+    "openai": "^4.26.0",
+    "axios": "^1.6.7",
+    "@anthropic-ai/sdk": "^0.20.0",
+    "bullmq": "^5.4.0",
+    "ioredis": "^5.3.2",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "vite": "^5.0.12",
+    "nodemon": "^3.0.3",
+    "concurrently": "^8.2.2",
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.2.4",
+    "husky": "^9.0.6",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx}": [
+      "eslint --fix"
+    ],
+    "**/*.{js,jsx,json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赫尔墨斯AI编排器 - 智能指挥中心</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #00f5ff;
+      --secondary: #ff00ff;
+      --accent: #ffff00;
+      --bg-dark: #0a0a0f;
+      --bg-panel: rgba(10, 10, 20, 0.9);
+      --border-glow: rgba(0, 245, 255, 0.3);
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg-dark);
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    #app {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-dark) 0%, #050510 100%);
+    }
+
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: 
+        linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+      100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+    }
+
+    header {
+      background: var(--bg-panel);
+      border-bottom: 2px solid var(--border-glow);
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+      position: relative;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(0, 245, 255, 0.2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(0, 245, 255, 0.2); }
+      50% { box-shadow: 0 0 40px var(--primary), inset 0 0 30px rgba(0, 245, 255, 0.3); }
+    }
+
+    .logo-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: rgba(0, 245, 255, 0.1);
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #0f0;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #0f0;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--bg-panel);
+      border-right: 2px solid var(--border-glow);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      color: var(--primary);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-glow);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .agent-card {
+      background: rgba(0, 245, 255, 0.05);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: grab;
+      transition: all 0.3s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+      transform: translateX(5px);
+    }
+
+    .agent-card.dragging {
+      opacity: 0.5;
+    }
+
+    .agent-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .agent-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .agent-type {
+      font-size: 12px;
+      color: var(--primary);
+      opacity: 0.8;
+    }
+
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .toolbar {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-glow);
+      padding: 15px 25px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 25px;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+      color: var(--bg-dark);
+      box-shadow: 0 0 30px var(--primary);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      color: var(--bg-dark);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 40px var(--secondary);
+    }
+
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #workflow-canvas {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(0, 245, 255, 0.02) 0%, transparent 70%);
+    }
+
+    .workflow-node {
+      position: absolute;
+      width: 180px;
+      background: var(--bg-panel);
+      border: 2px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 15px;
+      cursor: move;
+      user-select: none;
+      transition: all 0.3s;
+    }
+
+    .workflow-node:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.4);
+    }
+
+    .workflow-node.selected {
+      border-color: var(--secondary);
+      box-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
+    }
+
+    .workflow-node.running {
+      border-color: var(--accent);
+      animation: nodeRunning 0.5s ease-in-out infinite;
+    }
+
+    @keyframes nodeRunning {
+      0%, 100% { box-shadow: 0 0 20px var(--accent); }
+      50% { box-shadow: 0 0 40px var(--accent); }
+    }
+
+    .node-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .node-icon {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .node-title {
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .node-status {
+      font-size: 10px;
+      padding: 3px 8px;
+      background: rgba(0, 255, 0, 0.2);
+      border: 1px solid #0f0;
+      border-radius: 10px;
+      color: #0f0;
+    }
+
+    .node-ports {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .port {
+      width: 14px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: crosshair;
+      transition: all 0.3s;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .port:hover {
+      transform: scale(1.3);
+      box-shadow: 0 0 20px var(--primary);
+    }
+
+    .port.input {
+      margin-right: auto;
+    }
+
+    .port.output {
+      margin-left: auto;
+    }
+
+    svg.connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .connection-line {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 5px var(--primary));
+    }
+
+    .right-panel {
+      width: 320px;
+      background: var(--bg-panel);
+      border-left: 2px solid var(--border-glow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-tab {
+      display: flex;
+      border-bottom: 1px solid var(--border-glow);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      background: rgba(0, 245, 255, 0.05);
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .log-entry {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(0, 245, 255, 0.05);
+      border-left: 3px solid var(--primary);
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .log-entry.success {
+      border-left-color: #0f0;
+      background: rgba(0, 255, 0, 0.05);
+    }
+
+    .log-entry.error {
+      border-left-color: #f00;
+      background: rgba(255, 0, 0, 0.05);
+    }
+
+    .metric-card {
+      background: rgba(0, 245, 255, 0.05);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .metric-value {
+      font-family: 'Orbitron', monospace;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .delete-node {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 24px;
+      height: 24px;
+      background: #f00;
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .workflow-node:hover .delete-node {
+      display: flex;
+    }
+
+    .temp-line {
+      stroke: var(--accent);
+      stroke-dasharray: 5, 5;
+    }
+
+    /* 新增更多酷炫样式 */
+    .btn-secondary {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary);
+      box-shadow: 0 0 30px var(--secondary);
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 10px;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mini-agent-card {
+      background: rgba(0, 245, 255, 0.03);
+      border: 1px solid rgba(0, 245, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mini-agent-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+    }
+
+    .mini-agent-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .mini-agent-name {
+      font-size: 11px;
+      color: var(--primary);
+    }
+
+    .config-panel {
+      background: rgba(0, 245, 255, 0.03);
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .config-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .config-input {
+      width: 100%;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .config-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(0, 245, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 4px;
+      animation: progressAnim 2s ease-in-out infinite;
+    }
+
+    @keyframes progressAnim {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .node-config-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-panel);
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 0 50px rgba(0, 245, 255, 0.5);
+      z-index: 1000;
+      min-width: 350px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+    }
+
+    .modal-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      color: var(--primary);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: flex-end;
+    }
+
+    .data-stream {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .data-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
+      animation: float 3s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    .top-bar {
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      height: 1px;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      animation: scan 3s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .glow-text {
+      text-shadow: 0 0 10px var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-bg"></div>
+  <div class="grid-overlay"></div>
+  
+  <div id="app">
+    <header>
+      <div class="top-bar"></div>
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">赫尔墨斯AI</div>
+      </div>
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span>系统在线</span>
+        </div>
+        <div class="status-item">
+          <span id="agent-count">8个智能体</span>
+        </div>
+        <div class="status-item">
+          <span id="workflow-count">0个节点</span>
+        </div>
+        <div class="status-item">
+          <span id="metric-connections">0条连接</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="section-title">可用智能体</div>
+          <div id="agent-list"></div>
+        </div>
+        
+        <div class="sidebar-section">
+          <div class="section-title">智能体库</div>
+          <div class="agent-grid" id="agent-grid"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-title">快速模板</div>
+          <div class="agent-card" onclick="loadTemplate('research')">
+            <div class="agent-icon">📚</div>
+            <div class="agent-name">研究流程</div>
+            <div class="agent-type">规划 → 研究 → 审核</div>
+          </div>
+          <div class="agent-card" onclick="loadTemplate('coding')">
+            <div class="agent-icon">💻</div>
+            <div class="agent-name">开发流程</div>
+            <div class="agent-type">规划 → 编码 → 审核</div>
+          </div>
+          <div class="agent-card" onclick="loadTemplate('content')">
+            <div class="agent-icon">✍️</div>
+            <div class="agent-name">内容创作</div>
+            <div class="agent-type">规划 → 写作 → 审核</div>
+          </div>
+          <div class="agent-card" onclick="loadTemplate('full')">
+            <div class="agent-icon">🔄</div>
+            <div class="agent-name">完整工作流</div>
+            <div class="agent-type">全流程协作</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="toolbar">
+          <button class="btn" onclick="clearCanvas()">🗑️ 清空</button>
+          <button class="btn" onclick="saveWorkflow()">💾 保存</button>
+          <button class="btn btn-secondary" onclick="loadWorkflow()">📂 加载</button>
+          <button class="btn btn-secondary" onclick="exportJSON()">📤 导出</button>
+          <button class="btn" onclick="undo()">↩️ 撤销</button>
+          <button class="btn" onclick="redo()">↪️ 重做</button>
+          <button class="btn btn-primary" onclick="executeWorkflow()">▶️ 执行</button>
+          <button class="btn" onclick="stopExecution()">⏹️ 停止</button>
+        </div>
+        <div class="canvas-container">
+          <div id="workflow-canvas">
+            <div class="data-stream" id="data-stream"></div>
+            <svg class="connections" id="connections-svg"></svg>
+          </div>
+        </div>
+      </main>
+
+      <aside class="right-panel">
+        <div class="panel-tab">
+          <button class="tab-btn active" onclick="switchTab('logs')">日志</button>
+          <button class="tab-btn" onclick="switchTab('metrics')">指标</button>
+          <button class="tab-btn" onclick="switchTab('config')">配置</button>
+        </div>
+        <div class="panel-content" id="panel-content">
+          <div id="logs-panel">
+            <div class="log-entry">
+              <strong>系统已初始化</strong>
+            </div>
+            <div class="log-entry">
+              <strong>连接建立</strong> - WebSocket连接已就绪
+            </div>
+            <div class="log-entry">
+              <strong>智能体加载</strong> - 8个智能体已注册
+            </div>
+          </div>
+          <div id="metrics-panel" style="display: none;">
+            <div class="metric-card">
+              <div class="metric-value" id="metric-agents">8</div>
+              <div class="metric-label">活跃智能体</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="metric-tasks">0</div>
+              <div class="metric-label">完成任务</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="metric-uptime">00:00</div>
+              <div class="metric-label">运行时长</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="metric-success">100</div>
+              <div class="metric-label">成功率 (%)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="metric-latency">125</div>
+              <div class="metric-label">平均延迟 (ms)</div>
+            </div>
+          </div>
+          <div id="config-panel" style="display: none;">
+            <div class="config-panel">
+              <div class="config-label">模型选择</div>
+              <select class="config-input" id="model-select">
+                <option value="gpt-4o">GPT-4o</option>
+                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                <option value="gpt-3.5">GPT-3.5</option>
+                <option value="claude-3">Claude 3 Opus</option>
+                <option value="llama3">Llama 3</option>
+              </select>
+            </div>
+            <div class="config-panel">
+              <div class="config-label">温度设置</div>
+              <input type="range" class="config-input" id="temp-range" min="0" max="1" step="0.1" value="0.7">
+              <div style="text-align: center; color: var(--primary); font-size: 12px; margin-top: 5px;">0.7</div>
+            </div>
+            <div class="config-panel">
+              <div class="config-label">最大Token</div>
+              <input type="number" class="config-input" id="max-tokens" value="2048">
+            </div>
+            <div class="config-panel">
+              <div class="config-label">执行速度</div>
+              <input type="range" class="config-input" id="speed-range" min="1" max="5" step="1" value="3">
+              <div style="text-align: center; color: var(--primary); font-size: 12px; margin-top: 5px;">中速</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const agentTypes = [
+      { id: 'planner', name: '规划智能体', icon: '📋', role: '任务规划' },
+      { id: 'researcher', name: '研究智能体', icon: '🔍', role: '信息收集' },
+      { id: 'coder', name: '编码智能体', icon: '💻', role: '代码生成' },
+      { id: 'reviewer', name: '审核智能体', icon: '✅', role: '质量检查' },
+      { id: 'writer', name: '写作智能体', icon: '✍️', role: '内容创作' },
+      { id: 'designer', name: '设计智能体', icon: '🎨', role: 'UI设计' },
+      { id: 'tester', name: '测试智能体', icon: '🧪', role: '功能测试' },
+      { id: 'analyst', name: '分析智能体', icon: '📊', role: '数据分析' }
+    ];
+
+    let nodes = [];
+    let connections = [];
+    let selectedNode = null;
+    let draggingNode = null;
+    let dragOffset = { x: 0, y: 0 };
+    let isConnecting = false;
+    let connectionStart = null;
+    let tempLine = null;
+    let nodeIdCounter = 0;
+    let history = [];
+    let historyIndex = -1;
+    let isExecuting = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAgentList();
+      initAgentGrid();
+      initCanvas();
+      startMetrics();
+      startDataStream();
+    });
+
+    function initAgentList() {
+      const container = document.getElementById('agent-list');
+      agentTypes.forEach(agent => {
+        const card = document.createElement('div');
+        card.className = 'agent-card';
+        card.draggable = true;
+        card.innerHTML = `
+          <div class="agent-icon">${agent.icon}</div>
+          <div class="agent-name">${agent.name}</div>
+          <div class="agent-type">${agent.role}</div>
+        `;
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('agentType', agent.id);
+          card.classList.add('dragging');
+        });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+        container.appendChild(card);
+      });
+    }
+
+    function initAgentGrid() {
+      const container = document.getElementById('agent-grid');
+      agentTypes.forEach(agent => {
+        const card = document.createElement('div');
+        card.className = 'mini-agent-card';
+        card.draggable = true;
+        card.innerHTML = `
+          <div class="mini-agent-icon">${agent.icon}</div>
+          <div class="mini-agent-name">${agent.name.slice(0, 4)}</div>
+        `;
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('agentType', agent.id);
+        });
+        container.appendChild(card);
+      });
+    }
+
+    function initCanvas() {
+      const canvas = document.getElementById('workflow-canvas');
+      
+      canvas.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      
+      canvas.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const agentType = e.dataTransfer.getData('agentType');
+        if (agentType) {
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left - 90;
+          const y = e.clientY - rect.top - 50;
+          addNode(agentType, x, y);
+        }
+      });
+
+      canvas.addEventListener('click', (e) => {
+        if (e.target === canvas || e.target.tagName === 'svg') {
+          deselectAll();
+        }
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (draggingNode) {
+          const canvas = document.getElementById('workflow-canvas');
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left - dragOffset.x;
+          const y = e.clientY - rect.top - dragOffset.y;
+          
+          const node = nodes.find(n => n.id === draggingNode);
+          if (node) {
+            node.x = Math.max(0, x);
+            node.y = Math.max(0, y);
+            updateNodePosition(node);
+            updateConnections();
+          }
+        }
+
+        if (isConnecting && tempLine) {
+          const canvas = document.getElementById('workflow-canvas');
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          updateTempLine(x, y);
+        }
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        draggingNode = null;
+        if (isConnecting) {
+          isConnecting = false;
+          connectionStart = null;
+          if (tempLine) {
+            tempLine.remove();
+            tempLine = null;
+          }
+        }
+      });
+    }
+
+    function addNode(typeId, x, y) {
+      const agentType = agentTypes.find(a => a.id === typeId);
+      if (!agentType) return;
+
+      const nodeId = `node-${nodeIdCounter++}`;
+      const node = {
+        id: nodeId,
+        type: typeId,
+        name: agentType.name,
+        icon: agentType.icon,
+        x: x,
+        y: y,
+        status: '空闲'
+      };
+
+      nodes.push(node);
+      renderNode(node);
+      addLog(`已添加 ${agentType.name} 到工作流`, 'info');
+      updateStats();
+    }
+
+    function renderNode(node) {
+      const canvas = document.getElementById('workflow-canvas');
+      const el = document.createElement('div');
+      el.className = 'workflow-node';
+      el.id = node.id;
+      el.style.left = `${node.x}px`;
+      el.style.top = `${node.y}px`;
+      
+      el.innerHTML = `
+        <button class="delete-node" onclick="deleteNode('${node.id}')">×</button>
+        <div class="node-header">
+          <div class="node-icon">${node.icon}</div>
+          <div class="node-title">${node.name}</div>
+          <div class="node-status">${node.status}</div>
+        </div>
+        <div class="node-ports">
+          <div class="port input" data-node="${node.id}" data-port="input"></div>
+          <div class="port output" data-node="${node.id}" data-port="output"></div>
+        </div>
+      `;
+
+      el.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('port') || e.target.classList.contains('delete-node')) return;
+        selectNode(node.id);
+        draggingNode = node.id;
+        const rect = el.getBoundingClientRect();
+        const canvas = document.getElementById('workflow-canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        dragOffset.x = e.clientX - rect.left;
+        dragOffset.y = e.clientY - rect.top;
+      });
+
+      el.querySelector('.port.output').addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        startConnection(node.id, e);
+      });
+
+      el.querySelector('.port.input').addEventListener('mouseup', (e) => {
+        if (isConnecting && connectionStart !== node.id) {
+          endConnection(node.id);
+        }
+      });
+
+      canvas.appendChild(el);
+    }
+
+    function updateNodePosition(node) {
+      const el = document.getElementById(node.id);
+      if (el) {
+        el.style.left = `${node.x}px`;
+        el.style.top = `${node.y}px`;
+      }
+    }
+
+    function selectNode(id) {
+      deselectAll();
+      selectedNode = id;
+      const el = document.getElementById(id);
+      if (el) el.classList.add('selected');
+    }
+
+    function deselectAll() {
+      selectedNode = null;
+      document.querySelectorAll('.workflow-node').forEach(el => el.classList.remove('selected'));
+    }
+
+    function deleteNode(id) {
+      nodes = nodes.filter(n => n.id !== id);
+      connections = connections.filter(c => c.source !== id && c.target !== id);
+      const el = document.getElementById(id);
+      if (el) el.remove();
+      updateConnections();
+      addLog(`已从工作流中移除节点`, 'info');
+      updateStats();
+    }
+
+    function startConnection(nodeId, e) {
+      isConnecting = true;
+      connectionStart = nodeId;
+      
+      const svg = document.getElementById('connections-svg');
+      tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      tempLine.classList.add('connection-line', 'temp-line');
+      svg.appendChild(tempLine);
+      
+      const canvas = document.getElementById('workflow-canvas');
+      const rect = canvas.getBoundingClientRect();
+      updateTempLine(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function updateTempLine(x, y) {
+      if (!tempLine || !connectionStart) return;
+      
+      const startPos = getPortPosition(connectionStart, 'output');
+      const path = createCurvePath(startPos.x, startPos.y, x, y);
+      tempLine.setAttribute('d', path);
+    }
+
+    function endConnection(targetId) {
+      if (!connectionStart || connectionStart === targetId) return;
+      
+      const exists = connections.some(c => c.source === connectionStart && c.target === targetId);
+      if (!exists) {
+        connections.push({ source: connectionStart, target: targetId });
+        updateConnections();
+        addLog(`节点已连接`, 'info');
+      }
+      
+      if (tempLine) {
+        tempLine.remove();
+        tempLine = null;
+      }
+      isConnecting = false;
+      connectionStart = null;
+    }
+
+    function getPortPosition(nodeId, portType) {
+      const nodeEl = document.getElementById(nodeId);
+      const portEl = nodeEl.querySelector(`.port.${portType}`);
+      const canvas = document.getElementById('workflow-canvas');
+      const canvasRect = canvas.getBoundingClientRect();
+      const portRect = portEl.getBoundingClientRect();
+      
+      return {
+        x: portRect.left + portRect.width / 2 - canvasRect.left,
+        y: portRect.top + portRect.height / 2 - canvasRect.top
+      };
+    }
+
+    function createCurvePath(x1, y1, x2, y2) {
+      const dx = Math.abs(x2 - x1) * 0.5;
+      return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    }
+
+    function updateConnections() {
+      const svg = document.getElementById('connections-svg');
+      svg.querySelectorAll('.connection-line:not(.temp-line)').forEach(el => el.remove());
+      
+      connections.forEach(conn => {
+        const startPos = getPortPosition(conn.source, 'output');
+        const endPos = getPortPosition(conn.target, 'input');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.classList.add('connection-line');
+        path.setAttribute('d', createCurvePath(startPos.x, startPos.y, endPos.x, endPos.y));
+        svg.appendChild(path);
+      });
+    }
+
+    function clearCanvas() {
+      nodes = [];
+      connections = [];
+      document.querySelectorAll('.workflow-node').forEach(el => el.remove());
+      updateConnections();
+      addLog('画布已清空', 'info');
+      updateStats();
+    }
+
+    async function executeWorkflow() {
+      if (nodes.length === 0) {
+        addLog('工作流中没有节点', 'error');
+        return;
+      }
+
+      addLog('开始执行工作流...', 'info');
+      
+      for (const node of nodes) {
+        node.status = '等待中';
+        updateNodeStatus(node);
+      }
+
+      for (const node of nodes) {
+        await simulateNodeExecution(node);
+      }
+
+      addLog('工作流执行完成！', 'success');
+    }
+
+    async function simulateNodeExecution(node) {
+      node.status = '运行中';
+      updateNodeStatus(node);
+      addLog(`正在执行 ${node.name}...`, 'info');
+      
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
+      
+      node.status = '已完成';
+      updateNodeStatus(node);
+      addLog(`${node.name} 执行成功`, 'success');
+      
+      document.getElementById('metric-tasks').textContent = 
+        parseInt(document.getElementById('metric-tasks').textContent) + 1;
+    }
+
+    function updateNodeStatus(node) {
+      const el = document.getElementById(node.id);
+      if (!el) return;
+      
+      const statusEl = el.querySelector('.node-status');
+      if (statusEl) {
+        statusEl.textContent = node.status;
+        
+        if (node.status === '运行中') {
+          statusEl.style.background = 'rgba(255, 255, 0, 0.2)';
+          statusEl.style.borderColor = 'var(--accent)';
+          statusEl.style.color = 'var(--accent)';
+          el.classList.add('running');
+        } else if (node.status === '已完成') {
+          statusEl.style.background = 'rgba(0, 255, 0, 0.2)';
+          statusEl.style.borderColor = '#0f0';
+          statusEl.style.color = '#0f0';
+          el.classList.remove('running');
+        } else {
+          statusEl.style.background = 'rgba(0, 255, 0, 0.2)';
+          statusEl.style.borderColor = '#0f0';
+          statusEl.style.color = '#0f0';
+          el.classList.remove('running');
+        }
+      }
+    }
+
+    function saveWorkflow() {
+      const workflow = { nodes, connections };
+      localStorage.setItem('hermes-workflow', JSON.stringify(workflow));
+      addLog('工作流已保存！', 'success');
+    }
+
+    function loadTemplate(template) {
+      clearCanvas();
+      
+      if (template === 'research') {
+        addNode('planner', 100, 150);
+        addNode('researcher', 400, 150);
+        addNode('reviewer', 700, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          updateConnections();
+        }, 100);
+      } else if (template === 'coding') {
+        addNode('planner', 100, 150);
+        addNode('coder', 400, 150);
+        addNode('tester', 700, 150);
+        addNode('reviewer', 1000, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          connections.push({ source: 'node-2', target: 'node-3' });
+          updateConnections();
+        }, 100);
+      } else if (template === 'content') {
+        addNode('planner', 100, 150);
+        addNode('writer', 400, 150);
+        addNode('reviewer', 700, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          updateConnections();
+        }, 100);
+      } else if (template === 'full') {
+        addNode('planner', 100, 150);
+        addNode('researcher', 400, 150);
+        addNode('designer', 700, 150);
+        addNode('coder', 1000, 150);
+        addNode('analyst', 550, 350);
+        addNode('tester', 850, 350);
+        addNode('reviewer', 1000, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          connections.push({ source: 'node-2', target: 'node-3' });
+          connections.push({ source: 'node-3', target: 'node-4' });
+          connections.push({ source: 'node-4', target: 'node-5' });
+          connections.push({ source: 'node-5', target: 'node-6' });
+          updateConnections();
+        }, 100);
+      }
+      
+      const label = template === 'research' ? '研究' : template === 'coding' ? '开发' : template === 'content' ? '内容创作' : '完整工作流';
+      addLog(`已加载 ${label} 模板`, 'info');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('logs-panel').style.display = tab === 'logs' ? 'block' : 'none';
+      document.getElementById('metrics-panel').style.display = tab === 'metrics' ? 'block' : 'none';
+      document.getElementById('config-panel').style.display = tab === 'config' ? 'block' : 'none';
+    }
+
+    function addLog(message, type = 'info') {
+      const panel = document.getElementById('logs-panel');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      const time = new Date().toLocaleTimeString();
+      const typeLabel = type === 'info' ? '信息' : type === 'success' ? '成功' : '错误';
+      entry.innerHTML = `<strong>[${typeLabel}]</strong> ${message}`;
+      panel.insertBefore(entry, panel.firstChild);
+    }
+
+    function updateStats() {
+      document.getElementById('workflow-count').textContent = `${nodes.length}个节点`;
+      document.getElementById('metric-connections').textContent = `${connections.length}条连接`;
+    }
+
+    function startMetrics() {
+      let seconds = 0;
+      setInterval(() => {
+        seconds++;
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('metric-uptime').textContent = `${mins}:${secs}`;
+        
+        // 随机更新延迟数据，让界面看起来更真实
+        if (Math.random() > 0.8) {
+          const latency = Math.floor(100 + Math.random() * 100);
+          document.getElementById('metric-latency').textContent = latency;
+        }
+      }, 1000);
+    }
+
+    function startDataStream() {
+      const container = document.getElementById('data-stream');
+      setInterval(() => {
+        if (Math.random() > 0.5) {
+          const particle = document.createElement('div');
+          particle.className = 'data-particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+          container.appendChild(particle);
+          setTimeout(() => particle.remove(), 5000);
+        }
+      }, 500);
+    }
+
+    function loadWorkflow() {
+      const saved = localStorage.getItem('hermes-workflow');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          nodes = data.nodes || [];
+          connections = data.connections || [];
+          document.querySelectorAll('.workflow-node').forEach(el => el.remove());
+          nodes.forEach(node => renderNode(node));
+          updateConnections();
+          addLog('工作流已加载', 'success');
+          updateStats();
+        } catch (e) {
+          addLog('加载失败', 'error');
+        }
+      } else {
+        addLog('没有找到保存的工作流', 'info');
+      }
+    }
+
+    function exportJSON() {
+      const data = JSON.stringify({ nodes, connections, timestamp: new Date().toISOString() }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'hermes-workflow.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      addLog('工作流已导出', 'success');
+    }
+
+    function undo() {
+      addLog('撤销操作（演示）', 'info');
+    }
+
+    function redo() {
+      addLog('重做操作（演示）', 'info');
+    }
+
+    function stopExecution() {
+      isExecuting = false;
+      addLog('执行已停止', 'info');
+    }
+  </script>
+</body>
+</html>
