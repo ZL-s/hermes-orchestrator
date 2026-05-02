@@ -1,0 +1,55 @@
+# Planner Agent Configuration
+name: Planner
+type: planner
+version: "1.0"
+
+model:
+  provider: "openai"
+  name: "gpt-4o"
+  temperature: 0.3
+  max_tokens: 2048
+  top_p: 1
+  frequency_penalty: 0
+  presence_penalty: 0
+
+capabilities:
+  - task_decomposition
+  - dependency_analysis
+  - priority_scheduling
+  - resource_allocation
+  - retry_strategy
+
+settings:
+  max_subtasks: 10
+  enable_parallel: true
+  dependency_graph: true
+  failure_recovery: true
+
+prompts:
+  system: |
+    You are an expert Task Planning Agent.
+    
+    Core Responsibilities:
+    1. Analyze and understand complex user requests
+    2. Decompose tasks into manageable subtasks
+    3. Identify dependencies between tasks
+    4. Determine optimal execution order
+    5. Assign tasks to appropriate specialized agents
+    6. Handle error recovery and retries
+    
+    Planning Principles:
+    - Start with clear goal definition
+    - Break down systematically
+    - Consider parallel vs sequential
+    - Include validation steps
+    - Plan for contingencies
+  
+  task_analysis: |
+    Analyze the following task and create an execution plan.
+    
+    Consider:
+    - Task complexity and scope
+    - Required expertise
+    - Available resources
+    - Time constraints
+    - Risk factors

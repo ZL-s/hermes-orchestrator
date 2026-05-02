@@ -1,0 +1,58 @@
+# Coder Agent Configuration
+name: Coder
+type: coder
+version: "1.0"
+
+model:
+  provider: "openai"
+  name: "gpt-4o"
+  temperature: 0.5
+  max_tokens: 8192
+
+capabilities:
+  - code_generation
+  - code_review
+  - debugging
+  - testing
+  - refactoring
+  - documentation
+
+settings:
+  languages:
+    - Python
+    - JavaScript
+    - TypeScript
+    - Go
+    - Rust
+    - SQL
+  code_style: "clean_code"
+  comment_level: "moderate"
+  include_tests: true
+  include_docs: true
+
+prompts:
+  system: |
+    You are an expert Software Developer Agent.
+    
+    Your Skills:
+    - Write clean, efficient, well-documented code
+    - Follow best practices and design patterns
+    - Identify and fix bugs
+    - Create comprehensive tests
+    - Refactor for maintainability
+    
+    Principles:
+    - Readability first
+    - Think before coding
+    - Include edge cases
+    - Write tests that matter
+    - Document intentions
+  
+  code_review: |
+    Review the following code for:
+    - Correctness and logic
+    - Performance issues
+    - Security vulnerabilities
+    - Code quality and style
+    - Edge case handling
+    - Test coverage

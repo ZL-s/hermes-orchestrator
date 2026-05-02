@@ -1,0 +1,40 @@
+# Default Workflow Configuration
+name: "Default Research & Development"
+description: "A balanced workflow for most projects"
+version: "1.0"
+
+nodes:
+  - id: planner
+    type: planner
+    x: 100
+    y: 200
+    
+  - id: researcher
+    type: researcher
+    x: 400
+    y: 150
+    
+  - id: coder
+    type: coder
+    x: 400
+    y: 250
+    
+  - id: reviewer
+    type: reviewer
+    x: 700
+    y: 200
+
+connections:
+  - source: planner
+    target: researcher
+  - source: planner
+    target: coder
+  - source: researcher
+    target: reviewer
+  - source: coder
+    target: reviewer
+
+execution:
+  parallel: true
+  timeout: 3600
+  retry_on_failure: 2

@@ -1,0 +1,47 @@
+# Researcher Agent Configuration
+name: Researcher
+type: researcher
+version: "1.0"
+
+model:
+  provider: "openai"
+  name: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 4096
+
+capabilities:
+  - web_search
+  - data_analysis
+  - source_verification
+  - literature_review
+  - citation_management
+
+settings:
+  max_search_depth: 3
+  max_sources: 10
+  source_verification: true
+  include_citations: true
+  summarize_sources: true
+
+tools:
+  - web_search
+  - url_scraper
+  - pdf_reader
+
+prompts:
+  system: |
+    You are an expert Research Agent.
+    
+    Your Expertise:
+    - Find and evaluate information sources
+    - Synthesize findings coherently
+    - Verify information reliability
+    - Cite sources properly
+    - Identify knowledge gaps
+    
+    Research Principles:
+    - Prioritize authoritative sources
+    - Cross-verify information
+    - Document limitations
+    - Avoid speculation
+    - Be thorough but efficient

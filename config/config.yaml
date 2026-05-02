@@ -1,0 +1,61 @@
+# Hermes AI Orchestrator - Main Configuration
+version: "1.0.0"
+
+# Model Configuration
+models:
+  default: "gpt-4o"
+  
+  providers:
+    openai:
+      api_key: "${OPENAI_API_KEY}"
+      base_url: "https://api.openai.com/v1"
+      models:
+        - "gpt-4o"
+        - "gpt-4-turbo"
+        - "gpt-3.5-turbo"
+      
+    anthropic:
+      api_key: "${ANTHROPIC_API_KEY}"
+      base_url: "https://api.anthropic.com/v1"
+      models:
+        - "claude-3-opus"
+        - "claude-3-sonnet"
+        - "claude-3-haiku"
+      
+    ollama:
+      base_url: "http://localhost:11434"
+      models:
+        - "llama3"
+        - "mistral"
+
+# Agent Settings
+agents:
+  max_concurrent: 8
+  timeout: 300
+  retry_attempts: 3
+  retry_delay: 5
+
+# Workflow Engine
+workflow:
+  max_workflows: 100
+  state_persistence: true
+  checkpoint_interval: 30
+
+# API Server
+server:
+  host: "0.0.0.0"
+  port: 8000
+  cors_enabled: true
+  rate_limit: "100/min"
+
+# Logging
+logging:
+  level: "INFO"
+  format: "json"
+  output: ["console", "file"]
+  file_path: "./logs/hermes.log"
+
+# Storage
+storage:
+  type: "local"
+  local_path: "./data"
