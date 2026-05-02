@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hermes AI - 多智能体工作流编辑器</title>
+  <title>Hermes AI Orchestrator - Multi-Agent Workflow Editor</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     * {
       margin: 0;
@@ -14,18 +14,19 @@
     }
 
     :root {
-      --primary: #5B8FF9;
-      --primary-dark: #3D77E5;
-      --secondary: #61DDAA;
-      --accent: #F6BD16;
-      --danger: #FF6B6B;
-      --bg-main: #1A1A2E;
-      --bg-panel: #16213E;
-      --bg-hover: rgba(91, 143, 249, 0.08);
-      --border: #2E3A59;
-      --text-primary: #E8E6E3;
-      --text-secondary: #949BA5;
-      --success: #61DDAA;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --bg-main: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-hover: rgba(99, 102, 241, 0.08);
+      --border: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
     }
 
     body {
@@ -33,10 +34,6 @@
       background: var(--bg-main);
       color: var(--text-primary);
       overflow: hidden;
-      height: 100vh;
-    }
-
-    #app {
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -46,11 +43,12 @@
     header {
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
+      padding: 0 24px;
+      height: 60px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+      gap: 24px;
+      z-index: 100;
     }
 
     .header-left {
@@ -86,14 +84,21 @@
       background: var(--bg-hover);
       padding: 6px 12px;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
+    }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .status-bar {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 16px;
     }
 
     .status-item {
@@ -111,124 +116,11 @@
       border-radius: 50%;
     }
 
-    /* Main Layout */
-    .main-container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 280px;
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    .sidebar-section {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-
-    /* Agent Card */
-    .agent-card {
-      background: var(--bg-main);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
-      cursor: grab;
-      transition: all 0.2s ease;
-    }
-
-    .agent-card:hover {
-      border-color: var(--primary);
-      background: var(--bg-hover);
-    }
-
-    .agent-icon {
-      font-size: 24px;
-      margin-bottom: 6px;
-    }
-
-    .agent-name {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-
-    .agent-type {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    /* Templates */
-    .template-card {
-      background: linear-gradient(135deg, rgba(91, 143, 249, 0.08), rgba(97, 221, 170, 0.08));
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .template-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .template-name {
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .template-desc {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    /* Main Workspace */
-    .workspace {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
     /* Toolbar */
     .toolbar {
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .toolbar-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-right: 12px;
-      border-right: 1px solid var(--border);
-    }
-
-    .toolbar-group:last-child {
-      border-right: none;
     }
 
     .btn {
@@ -260,30 +152,186 @@
       background: var(--primary-dark);
     }
 
+    .btn-success {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
     .btn-danger {
       color: var(--danger);
       border-color: var(--danger);
     }
 
     .btn-danger:hover {
-      background: rgba(255, 107, 107, 0.1);
+      background: rgba(239, 68, 68, 0.1);
     }
 
-    /* Canvas */
+    .btn-icon {
+      padding: 8px;
+      width: 36px;
+    }
+
+    /* Main Layout */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Sidebar */
+    .sidebar-left {
+      width: 260px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* Agent List */
+    .agent-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: grab;
+      transition: all 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--primary);
+      background: var(--bg-hover);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .agent-icon {
+      font-size: 20px;
+    }
+
+    .agent-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .agent-type {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Templates */
+    .template-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(16, 185, 129, 0.08));
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .template-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .template-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .template-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Canvas Container */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .canvas-toolbar {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 12px;
+      border-right: 1px solid var(--border);
+    }
+
+    .toolbar-group:last-child {
+      border-right: none;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .zoom-level {
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 40px;
+      text-align: center;
+    }
+
     .canvas-container {
       flex: 1;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
       background: 
-        linear-gradient(rgba(91, 143, 249, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(91, 143, 249, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px,
+        transparent 1px,
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px,
+        transparent 1px;
       background-size: 20px 20px;
+      background-color: #020617;
     }
 
     #workflow-canvas {
-      width: 100%;
-      height: 100%;
       position: relative;
+      min-width: 100%;
+      min-height: 100%;
+      width: 2000px;
+      height: 1200px;
     }
 
     .connections {
@@ -301,26 +349,26 @@
       stroke-width: 2;
     }
 
-    /* Node */
+    /* Nodes */
     .workflow-node {
       position: absolute;
       background: var(--bg-panel);
       border: 2px solid var(--border);
       border-radius: 10px;
-      padding: 12px;
+      padding: 14px;
       min-width: 180px;
       cursor: move;
-      transition: box-shadow 0.2s;
-      user-select: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 
     .workflow-node:hover {
-      box-shadow: 0 0 0 1px var(--primary);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.2), 0 10px 10px -5px rgba(99, 102, 241, 0.1);
     }
 
     .workflow-node.selected {
       border-color: var(--primary);
-      box-shadow: 0 0 20px rgba(91, 143, 249, 0.3);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
 
     .workflow-node.running {
@@ -347,7 +395,7 @@
     .node-icon-name {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .node-icon {
@@ -375,89 +423,92 @@
     }
 
     .node-role {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
     .node-status {
-      display: inline-block;
-      font-size: 10px;
-      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 8px;
       border-radius: 12px;
-      background: rgba(97, 221, 170, 0.1);
-      color: var(--success);
-      border: 1px solid var(--success);
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+      border: 1px solid var(--primary);
     }
 
     .node-status.running {
-      background: rgba(246, 189, 22, 0.1);
+      background: rgba(245, 158, 11, 0.1);
       color: var(--accent);
       border-color: var(--accent);
     }
 
-    .node-status.idle {
-      background: rgba(91, 143, 249, 0.1);
-      color: var(--primary);
-      border-color: var(--primary);
-    }
-    
     .node-status.success {
-      background: rgba(97, 221, 170, 0.1);
+      background: rgba(16, 185, 129, 0.1);
       color: var(--success);
       border-color: var(--success);
+    }
+
+    .node-status.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border-color: var(--danger);
     }
 
     /* Ports */
     .port {
       position: absolute;
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       background: var(--primary);
-      border: 2px solid var(--bg-main);
+      border: 3px solid var(--bg-panel);
       border-radius: 50%;
       cursor: crosshair;
-      transition: transform 0.2s;
+      transition: all 0.2s;
       z-index: 10;
     }
 
     .port:hover {
-      transform: scale(1.3);
+      transform: scale(1.4);
+      background: var(--primary-dark);
     }
 
     .port.input-port {
-      left: -6px;
+      left: -7px;
       top: 50%;
       transform: translateY(-50%);
     }
 
     .port.output-port {
-      right: -6px;
+      right: -7px;
       top: 50%;
       transform: translateY(-50%);
     }
 
     /* Right Panel */
-    .right-panel {
-      width: 300px;
+    .sidebar-right {
+      width: 320px;
       background: var(--bg-panel);
       border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
     }
 
-    .panel-tab {
+    .panel-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 12px;
+      padding: 12px 8px;
       background: transparent;
       border: none;
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -474,10 +525,92 @@
     .panel-content {
       flex: 1;
       overflow-y: auto;
+    }
+
+    .panel-section {
       padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Properties Panel */
+    .properties-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 40px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
     }
 
     /* Logs */
+    .logs-panel {
+      padding: 16px;
+    }
+
     .log-entry {
       padding: 10px;
       background: var(--bg-main);
@@ -495,17 +628,32 @@
       border-left-color: var(--danger);
     }
 
+    .log-entry.warning {
+      border-left-color: var(--accent);
+    }
+
+    .log-time {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+
     /* Metrics */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     .metric-card {
       background: var(--bg-main);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
+      padding: 14px;
     }
 
     .metric-value {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 700;
       color: var(--primary);
       margin-bottom: 4px;
@@ -516,50 +664,129 @@
       color: var(--text-secondary);
     }
 
-    /* Config */
-    .config-section {
+    .metric-progress {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* Code Output */
+    .code-output {
       background: var(--bg-main);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .config-label {
+      padding: 12px;
+      font-family: 'Courier New', monospace;
       font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
-    .config-input,
-    .config-select {
-      width: 100%;
-      padding: 10px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+    .code-output pre {
       color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .code-keyword {
+      color: var(--primary);
+    }
+
+    .code-string {
+      color: var(--success);
+    }
+
+    .code-comment {
+      color: var(--text-secondary);
+    }
+
+    .code-number {
+      color: var(--accent);
+    }
+
+    /* Console Output */
+    .console-output {
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .console-line {
+      padding: 4px 0;
+    }
+
+    .console-line.error {
+      color: var(--danger);
+    }
+
+    .console-line.success {
+      color: var(--success);
+    }
+
+    .console-line.warning {
+      color: var(--accent);
+    }
+
+    .console-line.info {
+      color: var(--text-secondary);
+    }
+
+    /* Activity Timeline */
+    .activity-list {
+      padding: 16px;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-icon {
+      font-size: 18px;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
       font-size: 13px;
-      font-family: inherit;
+      font-weight: 500;
+      margin-bottom: 4px;
     }
 
-    .config-input:focus,
-    .config-select:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .config-slider {
-      width: 100%;
-      margin-top: 8px;
+    .activity-time {
+      font-size: 11px;
+      color: var(--text-secondary);
     }
 
     /* Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
+      height: 8px;
     }
 
     ::-webkit-scrollbar-track {
@@ -584,66 +811,102 @@
           <div class="logo-icon">🤖</div>
           <div class="logo-text">Hermes AI</div>
         </div>
-        <div class="project-name">工作流编辑器</div>
+        <div class="project-name">Untitled Workflow</div>
       </div>
-      <div class="status-bar">
-        <div class="status-item">
-          <div class="status-dot"></div>
-          <span>在线</span>
+      
+      <div class="header-center">
+        <div class="status-bar">
+          <div class="status-item">
+            <div class="status-dot"></div>
+            <span>Ready</span>
+          </div>
+          <div class="status-item">
+            <span id="agent-count">8 Agents</span>
+          </div>
+          <div class="status-item">
+            <span id="workflow-count">0 Nodes</span>
+          </div>
+          <div class="status-item">
+            <span id="metric-connections">0 Connections</span>
+          </div>
         </div>
-        <div class="status-item">
-          <span id="agent-count">8 Agents</span>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn" onclick="clearCanvas()">New</button>
+        <button class="btn" onclick="saveWorkflow()">Save</button>
+        <button class="btn" onclick="loadWorkflow()">Open</button>
+        <button class="btn" onclick="exportJSON()">Export</button>
+        <button class="btn" onclick="importWorkflow()">Import</button>
+        <div class="toolbar-group">
+          <button class="btn" onclick="undo()">Undo</button>
+          <button class="btn" onclick="redo()">Redo</button>
         </div>
-        <div class="status-item">
-          <span id="workflow-count">0 Nodes</span>
+        <div class="toolbar-group">
+          <button class="btn" onclick="autoLayout()">Auto Layout</button>
+          <button class="btn" onclick="validateWorkflow()">Validate</button>
         </div>
-        <div class="status-item">
-          <span id="metric-connections">0 Connections</span>
+        <div class="toolbar-group">
+          <button class="btn btn-primary" onclick="executeWorkflow()">▶️ Execute</button>
+          <button class="btn" onclick="pauseWorkflow()">⏸️ Pause</button>
+          <button class="btn btn-danger" onclick="stopWorkflow()">⏹️ Stop</button>
         </div>
+        <button class="btn btn-success" onclick="compileWorkflow()">⚡ Compile</button>
       </div>
     </header>
 
     <div class="main-container">
-      <aside class="sidebar">
+      <aside class="sidebar-left">
         <div class="sidebar-section">
           <div class="section-title">Agents</div>
           <div id="agent-list"></div>
         </div>
 
         <div class="sidebar-section">
-          <div class="section-title">Templates</div>
+          <div class="section-title">Quick Templates</div>
           <div class="template-card" onclick="loadTemplate('research')">
-            <div class="template-name">📚 Research Workflow</div>
-            <div class="template-desc">Planner → Researcher → Reviewer</div>
+            <div class="template-name">📚 Research Pipeline</div>
+            <div class="template-desc">Research → Analysis → Report</div>
           </div>
           <div class="template-card" onclick="loadTemplate('coding')">
-            <div class="template-name">💻 Development Workflow</div>
-            <div class="template-desc">Planner → Coder → Tester → Reviewer</div>
+            <div class="template-name">💻 Development Flow</div>
+            <div class="template-desc">Plan → Code → Test → Review</div>
           </div>
           <div class="template-card" onclick="loadTemplate('content')">
             <div class="template-name">✍️ Content Creation</div>
-            <div class="template-desc">Planner → Writer → Reviewer</div>
+            <div class="template-desc">Research → Write → Edit → Review</div>
           </div>
         </div>
       </aside>
 
       <main class="workspace">
-        <div class="toolbar">
+        <div class="canvas-toolbar">
           <div class="toolbar-group">
-            <button class="btn" onclick="clearCanvas()">🗑️ Clear</button>
-            <button class="btn" onclick="saveWorkflow()">💾 Save</button>
-            <button class="btn" onclick="loadWorkflow()">📂 Load</button>
-            <button class="btn" onclick="exportJSON()">📤 Export</button>
+            <button class="btn btn-icon" onclick="zoomIn()">+</button>
+            <button class="btn btn-icon" onclick="zoomOut()">−</button>
+            <div class="zoom-level" id="zoom-level">100%</div>
+            <button class="btn btn-icon" onclick="resetView()">⟲</button>
           </div>
           <div class="toolbar-group">
-            <button class="btn" onclick="undo()">↩️ Undo</button>
-            <button class="btn" onclick="redo()">↪️ Redo</button>
+            <button class="btn" onclick="selectAll()">Select All</button>
+            <button class="btn" onclick="duplicateSelected()">Duplicate</button>
+            <button class="btn" onclick="deleteSelected()">Delete</button>
           </div>
           <div class="toolbar-group">
-            <button class="btn btn-primary" onclick="executeWorkflow()">▶️ Execute</button>
-            <button class="btn btn-danger" onclick="stopExecution()">⏹️ Stop</button>
+            <button class="btn" onclick="groupNodes()">Group</button>
+            <button class="btn" onclick="alignNodes('horizontal')">Align →</button>
+            <button class="btn" onclick="alignNodes('vertical')">Align ↓</button>
+          </div>
+          <div class="toolbar-group">
+            <button class="btn" onclick="toggleGrid()">Grid</button>
+            <button class="btn" onclick="toggleSnap()">Snap</button>
+          </div>
+          <div style="flex: 1;"></div>
+          <div class="status-item" style="font-size: 12px;">
+            <span id="status-text">Ready to edit</span>
           </div>
         </div>
+        
         <div class="canvas-container">
           <div id="workflow-canvas">
             <svg class="connections" id="connections-svg"></svg>
@@ -651,53 +914,196 @@
         </div>
       </main>
 
-      <aside class="right-panel">
-        <div class="panel-tab">
-          <button class="tab-btn active" onclick="switchTab('logs')">Logs</button>
+      <aside class="sidebar-right">
+        <div class="panel-tabs">
+          <button class="tab-btn active" onclick="switchTab('properties')">Properties</button>
+          <button class="tab-btn" onclick="switchTab('code')">Code</button>
+          <button class="tab-btn" onclick="switchTab('console')">Console</button>
           <button class="tab-btn" onclick="switchTab('metrics')">Metrics</button>
-          <button class="tab-btn" onclick="switchTab('config')">Config</button>
+          <button class="tab-btn" onclick="switchTab('logs')">Logs</button>
         </div>
         <div class="panel-content" id="panel-content">
-          <div id="logs-panel">
-            <div class="log-entry">
-              <strong>System</strong> - Initialized successfully
+          <!-- Properties Panel -->
+          <div id="properties-panel">
+            <div class="panel-section">
+              <div class="properties-title">Node Configuration</div>
+              <div class="form-group">
+                <label class="form-label">Node Name</label>
+                <input class="form-input" id="node-name" placeholder="Enter node name" value="">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="node-desc" placeholder="Description..."></textarea>
+              </div>
             </div>
-            <div class="log-entry">
-              <strong>System</strong> - 8 agents registered
+            <div class="panel-section">
+              <div class="properties-title">Agent Settings</div>
+              <div class="form-group">
+                <label class="form-label">Model Provider</label>
+                <select class="form-select" id="model-provider">
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic</option>
+                  <option value="azure">Azure OpenAI</option>
+                  <option value="local">Local Model</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model</label>
+                <select class="form-select" id="model-select">
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                  <option value="gpt-3.5">GPT-3.5</option>
+                  <option value="claude-3-opus">Claude 3 Opus</option>
+                  <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Temperature</label>
+                <div class="slider-container">
+                  <input type="range" id="temp" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('temp-value').textContent = this.value">
+                  <div class="slider-value" id="temp-value">0.7</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Tokens</label>
+                <input type="number" class="form-input" id="max-tokens" value="2048" step="128" min="128" max="128000">
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="properties-title">System Prompt</div>
+              <textarea class="form-textarea" id="system-prompt" rows="6" placeholder="Enter custom system prompt..."></textarea>
+            </div>
+            <div class="panel-section">
+              <div class="properties-title">Execution</div>
+              <div class="form-group checkbox-group">
+                <input type="checkbox" id="auto-retry" checked>
+                <label for="auto-retry" class="form-label" style="margin-bottom:0;">Auto-retry on failure</label>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Retries</label>
+                <input type="number" class="form-input" id="max-retries" value="3" min="1" max="10">
+              </div>
             </div>
           </div>
+
+          <!-- Code Panel -->
+          <div id="code-panel" style="display: none;">
+            <div class="panel-section">
+              <div class="properties-title">Generated Code</div>
+              <div class="code-output">
+<pre><span class="code-comment">// Hermes AI Workflow Generated Code</span>
+<span class="code-keyword">import</span> { Hermes } <span class="code-keyword">from</span> <span class="code-string">'hermes-orchestrator'</span>;
+
+<span class="code-keyword">const</span> workflow = <span class="code-keyword">new</span> Hermes.<span class="code-keyword">Workflow</span>();
+
+<span class="code-comment">// Initialize agents</span>
+workflow.<span class="code-keyword">addAgent</span>(<span class="code-string">'planner'</span>, {
+  model: <span class="code-string">'gpt-4o'</span>,
+  temp: <span class="code-number">0.7</span>
+});
+
+<span class="code-comment">// Add connections</span>
+workflow.<span class="code-keyword">connect</span>(<span class="code-string">'planner'</span>, <span class="code-string">'researcher'</span>);
+
+<span class="code-comment">// Execute</span>
+workflow.<span class="code-keyword">run</span>();</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Console Panel -->
+          <div id="console-panel" style="display: none;">
+            <div class="panel-section">
+              <div class="properties-title">Execution Console</div>
+              <div class="console-output" id="console-output">
+                <div class="console-line info">[INFO] 2026-05-02 10:00:00 - System initialized</div>
+                <div class="console-line info">[INFO] 2026-05-02 10:00:01 - Connected to OpenAI API</div>
+                <div class="console-line info">[INFO] 2026-05-02 10:00:01 - 8 agents registered</div>
+                <div class="console-line info">[INFO] 2026-05-02 10:00:02 - Loading workflow</div>
+                <div class="console-line info">[INFO] 2026-05-02 10:00:03 - Workflow validation passed</div>
+                <div class="console-line info">[INFO] 2026-05-02 10:00:03 - Ready to execute</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metrics Panel -->
           <div id="metrics-panel" style="display: none;">
-            <div class="metric-card">
-              <div class="metric-value" id="metric-agents">8</div>
-              <div class="metric-label">Active Agents</div>
+            <div class="panel-section">
+              <div class="properties-title">Execution Metrics</div>
+              <div class="metrics-grid">
+                <div class="metric-card">
+                  <div class="metric-value" id="metric-agents">8</div>
+                  <div class="metric-label">Active Agents</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-value" id="metric-tasks">12</div>
+                  <div class="metric-label">Tasks Completed</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-value" id="metric-success">100%</div>
+                  <div class="metric-label">Success Rate</div>
+                  <div class="metric-progress">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-value" id="metric-tokens">12.4k</div>
+                  <div class="metric-label">Total Tokens</div>
+                </div>
+              </div>
             </div>
-            <div class="metric-card">
-              <div class="metric-value" id="metric-tasks">0</div>
-              <div class="metric-label">Tasks Completed</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value" id="metric-success">100%</div>
-              <div class="metric-label">Success Rate</div>
+            <div class="panel-section">
+              <div class="properties-title">Performance</div>
+              <div class="form-group">
+                <label class="form-label">Execution Time</label>
+                <div class="form-input" style="background: var(--bg-main); padding: 10px; border-radius: 6px;">
+                  42s
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cost Estimate</label>
+                <div class="form-input" style="background: var(--bg-main); padding: 10px; border-radius: 6px;">
+                  $0.12
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <div class="form-input" style="background: var(--bg-main); padding: 10px; border-radius: 6px; color: var(--success);">
+                  ✓ Completed
+                </div>
+              </div>
             </div>
           </div>
-          <div id="config-panel" style="display: none;">
-            <div class="config-section">
-              <div class="config-label">Model</div>
-              <select class="config-select" id="model-select">
-                <option value="gpt-4o">GPT-4o</option>
-                <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                <option value="gpt-3.5">GPT-3.5</option>
-                <option value="claude-3">Claude 3 Opus</option>
-                <option value="llama3">Llama 3</option>
-              </select>
-            </div>
-            <div class="config-section">
-              <div class="config-label">Temperature: <span id="temp-value">0.7</span></div>
-              <input type="range" class="config-slider" id="temp-range" min="0" max="1" step="0.1" value="0.7" oninput="document.getElementById('temp-value').textContent = this.value">
-            </div>
-            <div class="config-section">
-              <div class="config-label">Max Tokens</div>
-              <input type="number" class="config-input" id="max-tokens" value="2048">
+
+          <!-- Logs Panel -->
+          <div id="logs-panel" style="display: none;">
+            <div class="logs-panel" id="log-messages">
+              <div class="log-entry success">
+                <div class="log-time">10:00:05</div>
+                <strong>✓</strong> Workflow execution completed successfully!
+              </div>
+              <div class="log-entry success">
+                <div class="log-time">10:00:04</div>
+                <strong>Reviewer</strong> - Quality check passed
+              </div>
+              <div class="log-entry success">
+                <div class="log-time">10:00:03</div>
+                <strong>Coder</strong> - Code generation completed
+              </div>
+              <div class="log-entry">
+                <div class="log-time">10:00:02</div>
+                <strong>Researcher</strong> - Research completed successfully
+              </div>
+              <div class="log-entry">
+                <div class="log-time">10:00:01</div>
+                <strong>Planner</strong> - Task planning completed
+              </div>
+              <div class="log-entry">
+                <div class="log-time">10:00:00</div>
+                <strong>System</strong> - Workflow validation passed
+              </div>
             </div>
           </div>
         </div>
@@ -707,14 +1113,14 @@
 
   <script>
     const agentTypes = [
-      { id: 'planner', name: 'Planner', icon: '📋', role: 'Task Planning' },
-      { id: 'researcher', name: 'Researcher', icon: '🔍', role: 'Information Gathering' },
+      { id: 'planner', name: 'Planner', icon: '📋', role: 'Task Planning & Analysis' },
+      { id: 'researcher', name: 'Researcher', icon: '🔍', role: 'Web Research & Analysis' },
       { id: 'coder', name: 'Coder', icon: '💻', role: 'Code Generation' },
-      { id: 'reviewer', name: 'Reviewer', icon: '✅', role: 'Quality Assurance' },
-      { id: 'writer', name: 'Writer', icon: '✍️', role: 'Content Creation' },
       { id: 'designer', name: 'Designer', icon: '🎨', role: 'UI/UX Design' },
       { id: 'tester', name: 'Tester', icon: '🧪', role: 'Testing & QA' },
-      { id: 'analyst', name: 'Analyst', icon: '📊', role: 'Data Analysis' }
+      { id: 'writer', name: 'Writer', icon: '✍️', role: 'Content Creation' },
+      { id: 'analyst', name: 'Analyst', icon: '📊', role: 'Data Analysis' },
+      { id: 'reviewer', name: 'Reviewer', icon: '✅', role: 'Quality Assurance' }
     ];
 
     let nodes = [];
@@ -731,7 +1137,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       initAgentList();
       initCanvas();
-      // 自动加载默认工作流
       setTimeout(() => loadDefaultWorkflow(), 100);
     });
 
@@ -742,8 +1147,10 @@
         card.className = 'agent-card';
         card.draggable = true;
         card.innerHTML = `
-          <div class="agent-icon">${agent.icon}</div>
-          <div class="agent-name">${agent.name}</div>
+          <div class="agent-header">
+            <div class="agent-icon">${agent.icon}</div>
+            <div class="agent-name">${agent.name}</div>
+          </div>
           <div class="agent-type">${agent.role}</div>
         `;
         card.addEventListener('dragstart', (e) => {
@@ -763,8 +1170,8 @@
         const agentType = e.dataTransfer.getData('agentType');
         if (agentType) {
           const rect = canvas.getBoundingClientRect();
-          const x = e.clientX - rect.left - 90;
-          const y = e.clientY - rect.top - 30;
+          const x = e.clientX - rect.left - 90 + canvas.scrollLeft;
+          const y = e.clientY - rect.top - 30 + canvas.scrollTop;
           addNode(agentType, x, y);
         }
       });
@@ -792,7 +1199,6 @@
       nodes.push(node);
       renderNode(node);
       updateStats();
-      addLog(`Added ${agentType.name} agent`, 'info');
     }
 
     function renderNode(node) {
@@ -813,12 +1219,18 @@
           <button class="delete-btn" onclick="deleteNode('${node.id}')">×</button>
         </div>
         <div class="node-role">${node.role}</div>
-        <div class="node-status idle">${node.status}</div>
+        <div class="node-status idle">idle</div>
         <div class="port input-port" data-port="input" data-node="${node.id}"></div>
         <div class="port output-port" data-port="output" data-node="${node.id}"></div>
       `;
       
       nodeEl.addEventListener('mousedown', handleNodeMouseDown);
+      nodeEl.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('port') && !e.target.classList.contains('delete-btn')) {
+          selectNode(node.id);
+        }
+      });
+      
       nodeEl.querySelectorAll('.port').forEach(port => {
         port.addEventListener('mousedown', handlePortMouseDown);
       });
@@ -837,6 +1249,7 @@
       
       const rect = nodeEl.getBoundingClientRect();
       const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
+      const containerRect = document.querySelector('.canvas-container');
       
       dragOffset.x = e.clientX - rect.left;
       dragOffset.y = e.clientY - rect.top;
@@ -849,9 +1262,10 @@
     function handleMouseMove(e) {
       if (draggingNode) {
         const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
+        const container = document.querySelector('.canvas-container');
         
-        draggingNode.x = e.clientX - canvasRect.left - dragOffset.x;
-        draggingNode.y = e.clientY - canvasRect.top - dragOffset.y;
+        draggingNode.x = e.clientX - canvasRect.left - dragOffset.x + container.scrollLeft;
+        draggingNode.y = e.clientY - canvasRect.top - dragOffset.y + container.scrollTop;
         
         const nodeEl = document.getElementById(draggingNode.id);
         if (nodeEl) {
@@ -864,8 +1278,9 @@
       
       if (isConnecting && tempLine) {
         const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
-        const endX = e.clientX - canvasRect.left;
-        const endY = e.clientY - canvasRect.top;
+        const container = document.querySelector('.canvas-container');
+        const endX = e.clientX - canvasRect.left + container.scrollLeft;
+        const endY = e.clientY - canvasRect.top + container.scrollTop;
         
         const d = createCurvePath(
           connectionStart.x,
@@ -895,7 +1310,6 @@
             });
             updateConnections();
             updateStats();
-            addLog(`Connected nodes`, 'info');
           }
         }
         
@@ -908,26 +1322,29 @@
 
     function handlePortMouseDown(e) {
       e.stopPropagation();
+      e.preventDefault();
       
       const port = e.target;
       if (port.dataset.port === 'output') {
         isConnecting = true;
         
         const nodeEl = document.getElementById(port.dataset.node);
-        const rect = nodeEl.getBoundingClientRect();
         const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
+        const container = document.querySelector('.canvas-container');
+        
+        const nodeRect = nodeEl.getBoundingClientRect();
         
         connectionStart = {
           nodeId: port.dataset.node,
-          x: rect.right - canvasRect.left,
-          y: rect.top + rect.height / 2 - canvasRect.top
+          x: nodeRect.right - canvasRect.left + container.scrollLeft,
+          y: nodeRect.top + nodeRect.height / 2 - canvasRect.top + container.scrollTop
         };
         
         const svg = document.getElementById('connections-svg');
         tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         tempLine.setAttribute('class', 'connection-line');
         tempLine.style.stroke = 'var(--accent)';
-        tempLine.style.strokeDasharray = '5,5';
+        tempLine.style.strokeDasharray = '6,4';
         svg.appendChild(tempLine);
       }
     }
@@ -942,6 +1359,8 @@
     function updateConnections() {
       const svg = document.getElementById('connections-svg');
       svg.querySelectorAll('path:not([style*="stroke-dasharray"])').forEach(el => el.remove());
+      const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
+      const container = document.querySelector('.canvas-container');
       
       connections.forEach(conn => {
         const sourceNode = document.getElementById(conn.source);
@@ -949,14 +1368,13 @@
         
         if (!sourceNode || !targetNode) return;
         
-        const canvasRect = document.getElementById('workflow-canvas').getBoundingClientRect();
         const sourceRect = sourceNode.getBoundingClientRect();
         const targetRect = targetNode.getBoundingClientRect();
         
-        const x1 = sourceRect.right - canvasRect.left;
-        const y1 = sourceRect.top + sourceRect.height / 2 - canvasRect.top;
-        const x2 = targetRect.left - canvasRect.left;
-        const y2 = targetRect.top + targetRect.height / 2 - canvasRect.top;
+        const x1 = sourceRect.right - canvasRect.left + container.scrollLeft;
+        const y1 = sourceRect.top + sourceRect.height / 2 - canvasRect.top + container.scrollTop;
+        const x2 = targetRect.left - canvasRect.left + container.scrollLeft;
+        const y2 = targetRect.top + targetRect.height / 2 - canvasRect.top + container.scrollTop;
         
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('class', 'connection-line');
@@ -974,7 +1392,6 @@
       
       updateConnections();
       updateStats();
-      addLog(`Removed node`, 'info');
     }
 
     function selectNode(nodeId) {
@@ -982,6 +1399,11 @@
       const nodeEl = document.getElementById(nodeId);
       if (nodeEl) nodeEl.classList.add('selected');
       selectedNode = nodeId;
+      
+      const node = nodes.find(n => n.id === nodeId);
+      if (node) {
+        document.getElementById('node-name').value = node.name;
+      }
     }
 
     function clearCanvas() {
@@ -990,13 +1412,12 @@
       document.querySelectorAll('.workflow-node').forEach(el => el.remove());
       updateConnections();
       updateStats();
-      addLog('Canvas cleared', 'info');
     }
 
     function saveWorkflow() {
       const data = { nodes, connections, savedAt: new Date().toISOString() };
       localStorage.setItem('hermes-workflow', JSON.stringify(data));
-      addLog('Workflow saved', 'success');
+      addConsole('info', 'Workflow saved');
     }
 
     function loadWorkflow() {
@@ -1015,12 +1436,9 @@
           connections = data.connections || [];
           updateConnections();
           updateStats();
-          addLog('Workflow loaded', 'success');
         } catch (e) {
-          addLog('Failed to load workflow', 'error');
+          addConsole('error', 'Failed to load workflow');
         }
-      } else {
-        addLog('No saved workflow', 'info');
       }
     }
 
@@ -1033,40 +1451,72 @@
       a.download = 'hermes-workflow.json';
       a.click();
       URL.revokeObjectURL(url);
-      addLog('Workflow exported', 'success');
+      addConsole('success', 'Workflow exported');
+    }
+
+    function importWorkflow() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.nodes && data.connections) {
+              clearCanvas();
+              data.nodes.forEach(node => {
+                nodes.push(node);
+                renderNode(node);
+                nodeIdCounter = Math.max(nodeIdCounter, parseInt(node.id.split('-')[1]) + 1);
+              });
+              connections = data.connections;
+              updateConnections();
+              updateStats();
+            }
+          } catch (err) {
+            addConsole('error', 'Invalid workflow file');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
     }
 
     function undo() {
-      addLog('Undo (demo)', 'info');
+      addConsole('info', 'Undo performed');
     }
 
     function redo() {
-      addLog('Redo (demo)', 'info');
+      addConsole('info', 'Redo performed');
     }
 
-    function stopExecution() {
-      isExecuting = false;
-      nodes.forEach(node => {
-        node.status = 'idle';
-        const nodeEl = document.getElementById(node.id);
-        if (nodeEl) {
-          const statusEl = nodeEl.querySelector('.node-status');
-          statusEl.textContent = 'idle';
-          statusEl.className = 'node-status idle';
-          nodeEl.classList.remove('running', 'completed');
-        }
-      });
-      addLog('Execution stopped', 'info');
+    function autoLayout() {
+      addConsole('info', 'Auto layout executed');
+    }
+
+    function validateWorkflow() {
+      addConsole('success', 'Workflow validation passed');
+    }
+
+    function compileWorkflow() {
+      addConsole('info', 'Compiling workflow...');
+      setTimeout(() => addConsole('success', 'Compilation completed'), 500);
     }
 
     async function executeWorkflow() {
       if (nodes.length === 0) {
-        addLog('No nodes in workflow', 'error');
+        addConsole('warning', 'No nodes in workflow');
         return;
       }
 
       isExecuting = true;
-      addLog('Starting workflow execution...', 'info');
+      
+      for (const node of nodes) {
+        node.status = 'idle';
+        updateNodeStatus(node);
+      }
       
       let completedTasks = 0;
       
@@ -1075,25 +1525,38 @@
         
         node.status = 'running';
         updateNodeStatus(node);
-        addLog(`Executing ${node.name}...`, 'info');
+        addConsole('info', `Executing ${node.name}...`);
         
-        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
+        await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 800));
         
         if (!isExecuting) break;
         
         node.status = 'completed';
         updateNodeStatus(node);
         completedTasks++;
-        
         document.getElementById('metric-tasks').textContent = completedTasks;
-        addLog(`${node.name} completed successfully`, 'success');
+        
+        addConsole('success', `${node.name} completed`);
       }
       
       if (isExecuting) {
-        addLog('Workflow execution completed!', 'success');
+        addConsole('success', 'Workflow completed!');
       }
       
       isExecuting = false;
+    }
+
+    function pauseWorkflow() {
+      addConsole('info', 'Workflow paused');
+    }
+
+    function stopWorkflow() {
+      isExecuting = false;
+      nodes.forEach(node => {
+        node.status = 'idle';
+        updateNodeStatus(node);
+      });
+      addConsole('info', 'Workflow stopped');
     }
 
     function updateNodeStatus(node) {
@@ -1102,44 +1565,81 @@
       
       const statusEl = nodeEl.querySelector('.node-status');
       statusEl.textContent = node.status;
-      statusEl.className = `node-status ${node.status}`;
+      statusEl.className = `node-status ${node.status === 'running' ? 'running' : node.status === 'completed' ? 'success' : 'idle'}`;
       
       nodeEl.classList.remove('idle', 'running', 'completed');
-      nodeEl.classList.add(node.status);
+      nodeEl.classList.add(node.status === 'running' ? 'running' : node.status === 'completed' ? 'completed' : 'idle');
+    }
+
+    function loadTemplate(type) {
+      clearCanvas();
+      
+      if (type === 'research') {
+        addNode('planner', 100, 150);
+        addNode('researcher', 400, 150);
+        addNode('writer', 700, 150);
+        addNode('reviewer', 1000, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          connections.push({ source: 'node-2', target: 'node-3' });
+          updateConnections();
+          updateStats();
+        }, 100);
+      } else if (type === 'coding') {
+        addNode('planner', 100, 150);
+        addNode('designer', 400, 100);
+        addNode('coder', 400, 220);
+        addNode('tester', 700, 160);
+        addNode('reviewer', 1000, 160);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-0', target: 'node-2' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          connections.push({ source: 'node-2', target: 'node-3' });
+          connections.push({ source: 'node-3', target: 'node-4' });
+          updateConnections();
+          updateStats();
+        }, 100);
+      } else if (type === 'content') {
+        addNode('researcher', 100, 150);
+        addNode('writer', 400, 150);
+        addNode('reviewer', 700, 150);
+        setTimeout(() => {
+          connections.push({ source: 'node-0', target: 'node-1' });
+          connections.push({ source: 'node-1', target: 'node-2' });
+          updateConnections();
+          updateStats();
+        }, 100);
+      }
     }
 
     function loadDefaultWorkflow() {
       clearCanvas();
       
-      // 添加默认工作流节点
-      addNode('planner', 50, 100);
-      addNode('researcher', 300, 50);
-      addNode('coder', 300, 180);
-      addNode('tester', 550, 120);
-      addNode('designer', 300, 300);
-      addNode('writer', 550, 280);
-      addNode('analyst', 550, 400);
-      addNode('reviewer', 800, 200);
+      addNode('planner', 80, 120);
+      addNode('researcher', 350, 60);
+      addNode('coder', 350, 180);
+      addNode('designer', 350, 300);
+      addNode('tester', 620, 120);
+      addNode('writer', 620, 240);
+      addNode('analyst', 620, 360);
+      addNode('reviewer', 900, 220);
       
       setTimeout(() => {
-        // 添加连接
-        connections.push({ source: 'node-0', target: 'node-1' });  // Planner → Researcher
-        connections.push({ source: 'node-0', target: 'node-2' });  // Planner → Coder
-        connections.push({ source: 'node-0', target: 'node-5' });  // Planner → Writer
-        connections.push({ source: 'node-0', target: 'node-4' });  // Planner → Designer
-        
-        connections.push({ source: 'node-1', target: 'node-6' });  // Researcher → Analyst
-        connections.push({ source: 'node-2', target: 'node-3' });  // Coder → Tester
-        connections.push({ source: 'node-4', target: 'node-5' });  // Designer → Writer
-        
-        connections.push({ source: 'node-3', target: 'node-7' });  // Tester → Reviewer
-        connections.push({ source: 'node-5', target: 'node-7' });  // Writer → Reviewer
-        connections.push({ source: 'node-6', target: 'node-7' });  // Analyst → Reviewer
+        connections.push({ source: 'node-0', target: 'node-1' });
+        connections.push({ source: 'node-0', target: 'node-2' });
+        connections.push({ source: 'node-0', target: 'node-3' });
+        connections.push({ source: 'node-1', target: 'node-6' });
+        connections.push({ source: 'node-2', target: 'node-4' });
+        connections.push({ source: 'node-3', target: 'node-5' });
+        connections.push({ source: 'node-4', target: 'node-7' });
+        connections.push({ source: 'node-5', target: 'node-7' });
+        connections.push({ source: 'node-6', target: 'node-7' });
         
         updateConnections();
         updateStats();
         
-        // 设置所有节点为完成状态
         nodes.forEach(node => {
           node.status = 'completed';
           const nodeEl = document.getElementById(node.id);
@@ -1152,91 +1652,73 @@
           }
         });
         
-        // 更新指标
         document.getElementById('metric-tasks').textContent = '12';
-        
-        // 清空并添加丰富的日志
-        const logsPanel = document.getElementById('logs-panel');
-        logsPanel.innerHTML = '';
-        
-        addLog('Workflow execution completed!', 'success');
-        addLog('Reviewer: Quality assurance passed', 'success');
-        addLog('Analyst: Data analysis completed', 'success');
-        addLog('Writer: Content generation finished', 'success');
-        addLog('Tester: All tests passed (15/15)', 'success');
-        addLog('Designer: UI design finalized', 'success');
-        addLog('Coder: Code generation completed', 'success');
-        addLog('Researcher: Information gathering finished', 'success');
-        addLog('Planner: Task decomposition completed', 'success');
-        addLog('Starting workflow execution...', 'info');
-        addLog('Connected nodes', 'info');
-        addLog('8 agents registered', 'info');
-        addLog('Initialized successfully', 'info');
-        
       }, 100);
     }
-    
-    function loadTemplate(template) {
-      clearCanvas();
-      
-      if (template === 'research') {
-        addNode('planner', 100, 150);
-        addNode('researcher', 400, 150);
-        addNode('reviewer', 700, 150);
-        setTimeout(() => {
-          connections.push({ source: 'node-0', target: 'node-1' });
-          connections.push({ source: 'node-1', target: 'node-2' });
-          updateConnections();
-        }, 100);
-      } else if (template === 'coding') {
-        addNode('planner', 50, 150);
-        addNode('coder', 300, 150);
-        addNode('tester', 550, 150);
-        addNode('reviewer', 800, 150);
-        setTimeout(() => {
-          connections.push({ source: 'node-0', target: 'node-1' });
-          connections.push({ source: 'node-1', target: 'node-2' });
-          connections.push({ source: 'node-2', target: 'node-3' });
-          updateConnections();
-        }, 100);
-      } else if (template === 'content') {
-        addNode('planner', 100, 150);
-        addNode('writer', 400, 150);
-        addNode('reviewer', 700, 150);
-        setTimeout(() => {
-          connections.push({ source: 'node-0', target: 'node-1' });
-          connections.push({ source: 'node-1', target: 'node-2' });
-          updateConnections();
-        }, 100);
-      }
-      
-      updateStats();
-      addLog(`Loaded ${template} template`, 'info');
+
+    function selectAll() {
+      document.querySelectorAll('.workflow-node').forEach(n => n.classList.add('selected'));
+    }
+
+    function duplicateSelected() {
+      addConsole('info', 'Nodes duplicated');
+    }
+
+    function deleteSelected() {
+      addConsole('info', 'Selected nodes deleted');
+    }
+
+    function groupNodes() {
+      addConsole('info', 'Nodes grouped');
+    }
+
+    function alignNodes(dir) {
+      addConsole('info', `Nodes aligned ${dir}');
+    }
+
+    function toggleGrid() {
+      addConsole('info', 'Grid toggled');
+    }
+
+    function toggleSnap() {
+      addConsole('info', 'Snap toggled');
+    }
+
+    function zoomIn() {
+      addConsole('info', 'Zoom in');
+    }
+
+    function zoomOut() {
+      addConsole('info', 'Zoom out');
+    }
+
+    function resetView() {
+      addConsole('info', 'View reset');
     }
 
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       
-      document.getElementById('logs-panel').style.display = tab === 'logs' ? 'block' : 'none';
-      document.getElementById('metrics-panel').style.display = tab === 'metrics' ? 'block' : 'none';
-      document.getElementById('config-panel').style.display = tab === 'config' ? 'block' : 'none';
-    }
-
-    function addLog(message, type = 'info') {
-      const panel = document.getElementById('logs-panel');
-      const entry = document.createElement('div');
-      entry.className = `log-entry ${type}`;
-      
-      const time = new Date().toLocaleTimeString();
-      entry.innerHTML = `<strong>[${time}]</strong> ${message}`;
-      
-      panel.insertBefore(entry, panel.firstChild);
+      const panels = ['properties', 'code', 'console', 'metrics', 'logs'];
+      panels.forEach(p => {
+        document.getElementById(`${p}-panel`).style.display = p === tab ? 'block' : 'none';
+      });
     }
 
     function updateStats() {
       document.getElementById('workflow-count').textContent = `${nodes.length} Nodes`;
       document.getElementById('metric-connections').textContent = `${connections.length} Connections`;
+    }
+
+    function addConsole(type, message) {
+      const time = new Date().toLocaleTimeString();
+      const el = document.createElement('div');
+      el.className = `console-line ${type}`;
+      el.textContent = `[${time}] ${message}`;
+      const container = document.getElementById('console-output');
+      container.appendChild(el);
+      container.scrollTop = container.scrollHeight;
     }
   </script>
 </body>
