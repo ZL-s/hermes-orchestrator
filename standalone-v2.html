@@ -401,6 +401,12 @@
       color: var(--primary);
       border-color: var(--primary);
     }
+    
+    .node-status.success {
+      background: rgba(97, 221, 170, 0.1);
+      color: var(--success);
+      border-color: var(--success);
+    }
 
     /* Ports */
     .port {
@@ -725,6 +731,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       initAgentList();
       initCanvas();
+      // 自动加载默认工作流
+      setTimeout(() => loadDefaultWorkflow(), 100);
     });
 
     function initAgentList() {
@@ -1100,6 +1108,74 @@
       nodeEl.classList.add(node.status);
     }
 
+    function loadDefaultWorkflow() {
+      clearCanvas();
+      
+      // 添加默认工作流节点
+      addNode('planner', 50, 100);
+      addNode('researcher', 300, 50);
+      addNode('coder', 300, 180);
+      addNode('tester', 550, 120);
+      addNode('designer', 300, 300);
+      addNode('writer', 550, 280);
+      addNode('analyst', 550, 400);
+      addNode('reviewer', 800, 200);
+      
+      setTimeout(() => {
+        // 添加连接
+        connections.push({ source: 'node-0', target: 'node-1' });  // Planner → Researcher
+        connections.push({ source: 'node-0', target: 'node-2' });  // Planner → Coder
+        connections.push({ source: 'node-0', target: 'node-5' });  // Planner → Writer
+        connections.push({ source: 'node-0', target: 'node-4' });  // Planner → Designer
+        
+        connections.push({ source: 'node-1', target: 'node-6' });  // Researcher → Analyst
+        connections.push({ source: 'node-2', target: 'node-3' });  // Coder → Tester
+        connections.push({ source: 'node-4', target: 'node-5' });  // Designer → Writer
+        
+        connections.push({ source: 'node-3', target: 'node-7' });  // Tester → Reviewer
+        connections.push({ source: 'node-5', target: 'node-7' });  // Writer → Reviewer
+        connections.push({ source: 'node-6', target: 'node-7' });  // Analyst → Reviewer
+        
+        updateConnections();
+        updateStats();
+        
+        // 设置所有节点为完成状态
+        nodes.forEach(node => {
+          node.status = 'completed';
+          const nodeEl = document.getElementById(node.id);
+          if (nodeEl) {
+            const statusEl = nodeEl.querySelector('.node-status');
+            statusEl.textContent = 'completed';
+            statusEl.className = 'node-status success';
+            nodeEl.classList.add('completed');
+            nodeEl.style.borderColor = 'var(--success)';
+          }
+        });
+        
+        // 更新指标
+        document.getElementById('metric-tasks').textContent = '12';
+        
+        // 清空并添加丰富的日志
+        const logsPanel = document.getElementById('logs-panel');
+        logsPanel.innerHTML = '';
+        
+        addLog('Workflow execution completed!', 'success');
+        addLog('Reviewer: Quality assurance passed', 'success');
+        addLog('Analyst: Data analysis completed', 'success');
+        addLog('Writer: Content generation finished', 'success');
+        addLog('Tester: All tests passed (15/15)', 'success');
+        addLog('Designer: UI design finalized', 'success');
+        addLog('Coder: Code generation completed', 'success');
+        addLog('Researcher: Information gathering finished', 'success');
+        addLog('Planner: Task decomposition completed', 'success');
+        addLog('Starting workflow execution...', 'info');
+        addLog('Connected nodes', 'info');
+        addLog('8 agents registered', 'info');
+        addLog('Initialized successfully', 'info');
+        
+      }, 100);
+    }
+    
     function loadTemplate(template) {
       clearCanvas();
       
